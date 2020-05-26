@@ -24,20 +24,25 @@ beta_y = 25;
 beta_z = 2;
 
 %Con Smith dynamics saturadas
-global deltas pos_x_actual
+global deltas pos_x_actual pos_x_lider_actual
 
 %Variable global con las desviaciones con respecto al lider de cada
 %seguidor. El delta en la primera posicion siempre es 0, ya que corresponde
 %al lider.
 deltas = [0, 5, 10, 15];
 
-%Variable global con las posiciones de cada robot (por ahora solo en x).
-%Esto corresponde al r en el paper. La primera posicion es la del lider, lo
-%que es c en el paper. La ultima posicion es la de slack.
-pos_x_inicial = [0, 10, 20, 30, 140];
+%Variable global con las posiciones de cada robot y de la variable 
+%adicional(por ahora solo en x).
+%Esto corresponde al r en el paper. La primera posicion es la variable
+%adicional.
+pos_x_inicial = [140, 10, 20, 30];
 pos_x_actual = pos_x_inicial;
 
-pos_x = [pos_x_inicial; zeros(max_iter, n+1)];
+pos_x = [pos_x_inicial; zeros(max_iter, n)];
+
+pos_x_lider_inicial = 0;
+pos_x_lider_actual = pos_x_lider_inicial;
+pos_x_lider = [pos_x_lider_inicial; zeros(max_iter, 1)];
 
 %Cell con los vecinos de cada robot.
 neighbors = {[2 4], [1 3], [2 4], [1 4]};
@@ -48,12 +53,14 @@ epsilon = calcular_epsilon(neighbors);
 for k=2:max_iter+1
    
     if k < 150
-        pos_x_actual(1) = pos_x(k-1, 1) + 5/150;
+        pos_x_lider_actual = (5/150)*k + 2*sin((2*pi/75)*k);
+    else
+        pos_x_lider_actual = 2*sin((2*pi/75)*(k-150)) + 5;
     end
     
-    pos_x(k,1) = pos_x_actual(1);
+    pos_x_lider(k) = pos_x_lider_actual;
     
-    for i=2:n
+    for i=1:n
         suma = 0;
         robot_neighbors = neighbors{i};
         fi = fitness(i);
@@ -74,22 +81,29 @@ end
 disp("Termino");
 
 %Graficas
-labels = string(1:1:n);
-leyenda = string(repmat("Robot", 1, n));
+labels = string(2:1:n);
+leyenda = string(repmat("Submarino", 1, n-1));
 leyenda = join([leyenda; labels], " ", 1);
+leyenda = ["Submarino Lider", leyenda];
+% leyenda = ["Submarino Lider", leyenda , "Variable Adicional"];
 
 figure(1);
 set(1, "defaultAxesFontSize", 12);
 
 hold on
-for i=1:n
+
+plot(pos_x_lider);
+
+for i=2:n
     plot(pos_x(:, i))
 end
+
+% plot(pos_x(:,1));
 
 legend(leyenda);
 xlabel("Iteraciones");
 ylabel("Posicion en x");
-title("Posicion en x de cada robot");
+title("Posicion en x de cada submarino");
 grid on
 %% MPC
 
@@ -140,5 +154,3 @@ plot(0:Ts:T, x(:,1),'k--', 'LineWidth', 2);
 legend('No Lin', 'Lin');
 xlabel('Tiempo (s)');
 ylabel('X (m)');
-
-
