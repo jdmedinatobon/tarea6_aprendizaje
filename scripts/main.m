@@ -3,6 +3,11 @@ clear;
 
 %Trabajo basado en:
 %https://www.sciencedirect.com/science/article/pii/S0029801819304767
+%El paper del ifac tambien
+
+%Creo que lo que puedo hacer es utilizar lo de dinamicas poblacionales
+%distribuidas discretas para generar las trayectorias de cada submarino y
+%despues usar el MPC para lograr que siguan esas trayectorias.
 
 %Parametros del modelo
 nx = 12;
