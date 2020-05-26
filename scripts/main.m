@@ -10,13 +10,11 @@ clear;
 %despues usar el MPC para lograr que siguan esas trayectorias.
 
 %Iteraciones maximas.
-max_iter = 400;
+max_iter = 300;
 
 %Voy a hacer esa parte primero.
-%Por ahora con 3 robots.
-%1 conectado con 2, 2 conectado con 3. 3 NO conectado con 1.
-n = 3;
-n_mono = [1, 2, 1];
+%Por ahora con 4 robots.
+n = 4;
 
 %Dimensiones de una piscina olimpica
 global beta_x beta_y beta_z
@@ -31,22 +29,29 @@ global deltas pos_x_actual
 %Variable global con las desviaciones con respecto al lider de cada
 %seguidor. El delta en la primera posicion siempre es 0, ya que corresponde
 %al lider.
-deltas = [0, 1, 2];
+deltas = [0, 5, 10, 15];
 
 %Variable global con las posiciones de cada robot (por ahora solo en x).
 %Esto corresponde al r en el paper. La primera posicion es la del lider, lo
 %que es c en el paper. La ultima posicion es la de slack.
-pos_x_inicial = [0, 10, 20, 120];
+pos_x_inicial = [0, 10, 20, 30, 140];
 pos_x_actual = pos_x_inicial;
 
 pos_x = [pos_x_inicial; zeros(max_iter, n+1)];
 
 %Cell con los vecinos de cada robot.
-neighbors = {2, [1 3], 2};
+neighbors = {[2 4], [1 3], [2 4], [1 4]};
 
 epsilon = calcular_epsilon(neighbors);
 
+%Hacer esto para todas las dimensiones y depronto tambien los angulos.
 for k=2:max_iter+1
+   
+    if k < 150
+        pos_x_actual(1) = pos_x(k-1, 1) + 5/150;
+    end
+    
+    pos_x(k,1) = pos_x_actual(1);
     
     for i=2:n
         suma = 0;
@@ -64,7 +69,6 @@ for k=2:max_iter+1
     pos_x(k, i) = pos_x_actual(i);
     
     end
-   
 end
 
 disp("Termino");
@@ -75,12 +79,17 @@ leyenda = string(repmat("Robot", 1, n));
 leyenda = join([leyenda; labels], " ", 1);
 
 figure(1);
+set(1, "defaultAxesFontSize", 12);
+
 hold on
 for i=1:n
     plot(pos_x(:, i))
 end
 
 legend(leyenda);
+xlabel("Iteraciones");
+ylabel("Posicion en x");
+title("Posicion en x de cada robot");
 grid on
 %% MPC
 

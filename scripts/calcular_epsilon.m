@@ -4,7 +4,7 @@ global beta_x
 
 num_neighbors = length(neighbors);
 
-epsilon = (1/beta_x)*ones(1, num_neighbors);
+epsilon = (0.999/beta_x)*ones(1, num_neighbors);
 
 %Vectorizar esto
 for n=1:num_neighbors
