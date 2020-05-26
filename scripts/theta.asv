@@ -1,0 +1,17 @@
+function theta = theta(i, j)
+
+global beta_x pos_x
+
+fi = fitness(i);
+fj = fitness(j);
+
+if fi > fj
+    theta  = beta_x;
+elseif fi < fj
+    theta = 
+    
+
+theta = ;
+
+end
+

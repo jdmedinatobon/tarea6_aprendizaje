@@ -10,7 +10,7 @@ clear;
 %despues usar el MPC para lograr que siguan esas trayectorias.
 
 %Iteraciones maximas.
-max_iter = 400;
+max_iter = 100;
 
 %Voy a hacer esa parte primero.
 %Por ahora con 3 robots.
@@ -46,7 +46,7 @@ neighbors = {2, [1 3], 2};
 
 epsilon = calcular_epsilon(neighbors);
 
-for k=2:max_iter+1
+for k=1:max_iter
     
     for i=2:n
         suma = 0;
@@ -69,19 +69,13 @@ end
 
 disp("Termino");
 
-%Graficas
-labels = string(1:1:n);
-leyenda = string(repmat("Robot", 1, n));
-leyenda = join([leyenda; labels], " ", 1);
+%% Graficas
 
 figure(1);
 hold on
 for i=1:n
     plot(pos_x(:, i))
-end
 
-legend(leyenda);
-grid on
 %% MPC
 
 %Parametros del modelo
