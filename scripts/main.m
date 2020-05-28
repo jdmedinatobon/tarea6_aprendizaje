@@ -21,13 +21,9 @@ n = 4;
 dim = 6;
 
 %Dimensiones de una piscina olimpica
-global beta%beta_x beta_y beta_z
+global beta
 
-beta = [50; 25; 2; 2*pi; 2*pi; 2*pi];
-
-% beta_x = 50;
-% beta_y = 50;
-% beta_z = 50;
+beta = [50; 50; 50; 2*pi; 2*pi; 2*pi];
 
 %Con Smith dynamics saturadas
 global deltas pos_actual pos_lider_actual
