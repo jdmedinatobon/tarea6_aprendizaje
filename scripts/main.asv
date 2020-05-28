@@ -119,7 +119,7 @@ leyenda = join([leyenda; labels], " ", 1);
 leyenda = ["Submarino Lider", leyenda];
 % leyenda = ["Submarino Lider", leyenda , "Variable Adicional"];
 
-fig1 = figure('units','normalized','outerposition',[0 0 1 1]);
+fig1 = figure(1);
 set(1, "defaultAxesFontSize", 12);
 
 for i=1:dim
@@ -142,8 +142,9 @@ end
 
 
 % 
-fig2 = figure('units','normalized','outerposition',[0 0 1 1]);
-set(2, "defaultAxesFontSize", 16);
+fig2 = figure(2);
+figure('units','normalized','outerposition',[0 0 1 1])
+set(2, "defaultAxesFontSize", 12);
 
 leyenda2 = [leyenda, "Posición Inicial", "Posición Final"];
 hold on
