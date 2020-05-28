@@ -120,16 +120,16 @@ leyenda = ["Submarino Lider", leyenda];
 % leyenda = ["Submarino Lider", leyenda , "Variable Adicional"];
 
 fig1 = figure('units','normalized','outerposition',[0 0 1 1]);
-set(1, "defaultAxesFontSize", 12);
+set(1, "defaultAxesFontSize", 16);
 
 for i=1:dim
     subplot(2,3,i);
     hold on
     
-    plot(pos_lider(i,:));
+    plot(pos_lider(i,:), 'LineWidth', 2);
 
     for j=2:n
-        plot(squeeze(pos(i, j, :)));
+        plot(squeeze(pos(i, j, :)), 'LineWidth', 2);
     end
 
     %plot(pos_x(:,1));
@@ -143,12 +143,12 @@ end
 
 % 
 fig2 = figure('units','normalized','outerposition',[0 0 1 1]);
-set(2, "defaultAxesFontSize", 16);
+set(2, "defaultAxesFontSize", 20);
 
 leyenda2 = [leyenda, "Posición Inicial", "Posición Final"];
 hold on
 
-plot3(pos_lider(1, :), pos_lider(2, :), pos_lider(3, :));
+plot3(pos_lider(1, :), pos_lider(2, :), pos_lider(3, :), 'LineWidth', 2);
 
 for i=2:n
     x = squeeze(pos(1, i, :)); 
@@ -164,7 +164,7 @@ for i=2:n
 %     v = cos(phi_x).*sin(phi_z);
 %     w = sin(phi_x).*cos(phi_y);
     
-    plot3(x, y, z);
+    plot3(x, y, z, 'LineWidth', 2);
 %     quiver3(x(1:4:max_iter+1), y(1:4:max_iter+1), z(1:4:max_iter+1),...
 %             u(1:4:max_iter+1), v(1:4:max_iter+1), w(1:4:max_iter+1));
 end
@@ -181,8 +181,8 @@ x_end = [pos_lider(1,end), pos(1,2,end), pos(1,3,end), pos(1,4,end)];
 y_end = [pos_lider(2,end), pos(2,2,end), pos(2,3,end), pos(2,4,end)];
 z_end = [pos_lider(3,end), pos(3,2,end), pos(3,3,end), pos(3,4,end)];
 
-scatter3(x0, y0, z0, 'ko');
-scatter3(x_end, y_end, z_end, 'kx');
+scatter3(x0, y0, z0, 200, 'ko');
+scatter3(x_end, y_end, z_end, 200, 'kx');
 
 legend(leyenda2);
 title("Trayectoria de cada Submarino");
