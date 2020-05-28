@@ -1,11 +1,13 @@
 function f = fitness(index)
 
-global deltas pos_x_actual pos_x_lider_actual
+global deltas pos_actual pos_lider_actual
+
+aux = squeeze(pos_actual);
 
 if index > 1
-    f =  deltas(index) - pos_x_actual(index);
+    f =  deltas(:, index) - aux(:, index);
 else
-    f = -pos_x_lider_actual;
+    f = -pos_lider_actual;
 end
 
 end

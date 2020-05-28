@@ -1,15 +1,18 @@
 function theta = theta(i, j, fi, fj)
 
-global beta_x pos_x_actual
+global beta pos_actual
 
-if fi > fj
-    theta = min(pos_x_actual(j), beta_x);
-elseif fi < fj
-    theta = min(pos_x_actual(i), beta_x);
-else
-    theta = beta_x;
+% if fi > fj
+%     theta = min(pos_actual(j), beta(1));
+% elseif fi < fj
+%     theta = min(pos_actual(i), beta(1));
+% else
+%     theta = beta(1);
+% end
 
-end
+theta = (fi > fj).*min(pos_actual(:,j), beta) + ...
+        (fi < fj).*min(pos_actual(:,i), beta) + ...
+        (fi == fj).*beta;
 
 end
 

@@ -10,58 +10,77 @@ clear;
 %despues usar el MPC para lograr que siguan esas trayectorias.
 
 %Iteraciones maximas.
-max_iter = 300;
+max_iter = 30;
 
 %Voy a hacer esa parte primero.
 %Por ahora con 4 robots.
 n = 4;
 
-%Dimensiones de una piscina olimpica
-global beta_x beta_y beta_z
+%Numero de dimensiones.
+dim = 6;
 
-beta_x = 50;
-beta_y = 25;
-beta_z = 2;
+%Dimensiones de una piscina olimpica
+global beta%beta_x beta_y beta_z
+
+beta = [50; 25; 2; 2*pi; 2*pi; 2*pi];
+
+% beta_x = 50;
+% beta_y = 25;
+% beta_z = 2;
 
 %Con Smith dynamics saturadas
-global deltas pos_x_actual pos_x_lider_actual
+global deltas pos_actual pos_lider_actual
 
 %Variable global con las desviaciones con respecto al lider de cada
 %seguidor. El delta en la primera posicion siempre es 0, ya que corresponde
 %al lider.
-deltas = [0, 5, 10, 15];
+deltas = [0 ,   5 , 10 ,   15  ;
+          0 ,  2.5,  5 ,   7.5 ;
+          0 , 0.25, 0.5,  0.75 ;
+          0 , pi/2,  pi, 3*pi/2;
+          0 ,   0 ,  0 ,   0   ;
+          0 ,   0 ,  0 ,   0  ];
 
 %Variable global con las posiciones de cada robot y de la variable 
-%adicional(por ahora solo en x).
+%adicional.
 %Esto corresponde al r en el paper. La primera posicion es la variable
 %adicional.
-pos_x_inicial = [140, 10, 20, 30];
-pos_x_actual = pos_x_inicial;
+pos_inicial(:,:,1) = [ 140,  10 ,  20, 30 ;
+                        70,   5 ,  10, 15 ;
+                        7 ,  0.5,  1 , 1.5;
+                      n*2*pi,   0 ,  0 ,  0 ;
+                      n*2*pi,   0 ,  0 ,  0 ;
+                      n*2*pi,   0 ,  0 ,  0 ;];
+            
+pos_actual = pos_inicial(:,:,1);
 
-pos_x = [pos_x_inicial; zeros(max_iter, n)];
+pos = cat(3, pos_inicial, zeros(dim, n, max_iter));
 
-pos_x_lider_inicial = 0;
-pos_x_lider_actual = pos_x_lider_inicial;
-pos_x_lider = [pos_x_lider_inicial; zeros(max_iter, 1)];
+pos_lider_inicial = [0; 0; 0; 0; 0; 0];
+pos_lider_actual = pos_lider_inicial;
+
+pos_lider = [pos_lider_inicial, zeros(dim, max_iter)];
 
 %Cell con los vecinos de cada robot.
 neighbors = {[2 4], [1 3], [2 4], [1 4]};
 
 epsilon = calcular_epsilon(neighbors);
 
+aux = pos_actual;
+
 %Hacer esto para todas las dimensiones y depronto tambien los angulos.
 for k=2:max_iter+1
    
-    if k < 150
-        pos_x_lider_actual = (5/150)*k + 2*sin((2*pi/75)*k);
-    else
-        pos_x_lider_actual = 2*sin((2*pi/75)*(k-150)) + 5;
-    end
+%     if k < 150
+%         pos_lider_actual = (5/150)*k + 2*sin((2*pi/75)*k);
+%     else
+%         pos_lider_actual = 2*sin((2*pi/75)*(k-150)) + 5;
+%     end
     
-    pos_x_lider(k) = pos_x_lider_actual;
+    pos_lider(:, k) = pos_lider_actual;
     
     for i=1:n
-        suma = 0;
+        suma = zeros(dim, 1);
         robot_neighbors = neighbors{i};
         fi = fitness(i);
         
@@ -69,19 +88,24 @@ for k=2:max_iter+1
             j = robot_neighbors(r);
             
             fj = fitness(j);
-            suma = suma + (fi-fj)*theta(i, j, fi, fj)*phi(fi, fj);
+            suma = suma + (fi-fj).*theta(i, j, fi, fj).*phi(fi, fj);
         end
-    
-    pos_x_actual(i) = pos_x_actual(i) + epsilon(i)*suma;
-    pos_x(k, i) = pos_x_actual(i);
+
+    aux(:, i) = pos_actual(:, i) + epsilon(:, i).*suma;
+    pos(:, i, k) = aux(:, i);
     
     end
+    
+    pos_actual = aux;
 end
 
 disp("Termino");
 
 %Graficas
 labels = string(2:1:n);
+ejes_y = ["x", "y", "z", "\phi_x", "\phi_y", "\phi_z"];
+titulos = ["Posicion en", "Posicion en", "Posicion en",...
+           "Orientacion en", "Orientacion en", "Orientacion en "];
 leyenda = string(repmat("Submarino", 1, n-1));
 leyenda = join([leyenda; labels], " ", 1);
 leyenda = ["Submarino Lider", leyenda];
@@ -90,21 +114,24 @@ leyenda = ["Submarino Lider", leyenda];
 figure(1);
 set(1, "defaultAxesFontSize", 12);
 
-hold on
+for i=1:dim
+    subplot(2,3,i);
+    hold on
+    
+    plot(pos_lider(i,:));
 
-plot(pos_x_lider);
+    for j=2:n
+        plot(squeeze(pos(i, j, :)));
+    end
 
-for i=2:n
-    plot(pos_x(:, i))
+    %plot(pos_x(:,1));
+    legend(leyenda);
+    xlabel("Iteraciones");
+    ylabel("Posicion en " + ejes_y(i));
+    grid on
+    title(titulos(i) + " " + ejes_y(i) + " de cada submarino");
 end
 
-% plot(pos_x(:,1));
-
-legend(leyenda);
-xlabel("Iteraciones");
-ylabel("Posicion en x");
-title("Posicion en x de cada submarino");
-grid on
 %% MPC
 
 %Parametros del modelo
