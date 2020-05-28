@@ -187,8 +187,8 @@ grid on
 file1 = "./img/P1.png";
 file2 = "./img/P2.png";
 
-saveas(fig1, file1);
-saveas(fig2, file2);
+% saveas(fig1, file1);
+% saveas(fig2, file2);
 %% MPC
 
 %Parametros del modelo
